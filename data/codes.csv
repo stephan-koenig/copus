@@ -1,0 +1,26 @@
+﻿type,code,label,description
+students,L,listening,"Listening to instructor/taking notes, etc."
+students,Ind,individual_thinking,Individual thinking/problem solving. Only mark when an instructor explicitly asks students to think about a clicker question or another question/problem on their own.
+students,CG,clicker_question_in_group,Discuss clicker question in groups of 2 or more students
+students,WG,worksheet_activity_in_group,Working in groups on worksheet activity
+students,OG,other_group_activity,"Other assigned group activity, such as responding to instructor question"
+students,AnQ,answering_question,Student answering a question posed by the instructor with rest of class listening
+students,SQ,asking_question,Student asks question
+students,WC,whole_class_discussion,"Engaged in whole class discussion by offering explanations, opinion, judgment, etc. to whole class, often facilitated by instructor"
+students,Prd,making_prediction,Making a prediction about the outcome of demo or experiment
+students,SP,presentation,Presentation by student(s)
+students,TQ,test,Test or quiz
+students,W,waiting,"Waiting (instructor late, working on fixing AV problems, instructor otherwise occupied, etc.)"
+students,O,other,Other – explain in comments
+instructors,Lec,lecturing,"Lecturing (presenting content, deriving mathematical results, presenting a problem solution, etc.)"
+instructors,RtW,real_time_writing,"Real-time writing on board, doc. projector, etc. (often checked off along with Lec)"
+instructors,FUp,follow_up,Follow-up/feedback on clicker question or activity to entire class
+instructors,PQ,posing_question,Posing non-clicker question to students (non-rhetorical)
+instructors,CQ,asking_clicker_question,"Asking a clicker question (mark the entire time the instructor is using a clicker question, not just when first asked)"
+instructors,AnQ,answering_question,Listening to and answering student questions with entire class listening
+instructors,MG,moving_and_guiding,Moving through class guiding ongoing student work during active learning task
+instructors,1o1,one_on_one,"One-on-one extended discussion with one or a few individuals, not paying attention to the rest of the class (can be along with MG or AnQ)"
+instructors,D/V,demo,"Showing or conducting a demo, experiment, simulation, video, or animation"
+instructors,Adm,admin,"Administration (assign homework, return tests, etc.)"
+instructors,W,waiting,Waiting when there is an opportunity for an instructor to be interacting with or observing/listening to student or group activities and the instructor is not doing so
+instructors,O,other,Other – explain in comments

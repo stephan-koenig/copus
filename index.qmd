@@ -1,0 +1,21 @@
+---
+title: "COPUS for Karina Mochetti"
+author: "Stephan Koenig"
+---
+
+## Classroom Observation Protocol for Undergraduate STEM (COPUS)
+
+```{r}
+#| label: setup
+
+source("R/functions.R")
+observation_1 <- get_data(
+  "data/raw/2023-11-02_COPUS_CPSC-121_Karina-Mochetti.xlsx",
+  "data/code.csv"
+)
+
+observation_2 <- get_data(
+  "data/raw/2023-11-07_COPUS_CPSC-121_Karina-Mochetti.xlsx",
+  "data/code.csv"
+)
+```
