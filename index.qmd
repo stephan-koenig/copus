@@ -1,5 +1,5 @@
 ---
-title: "COPUS for Karina Mochetti"
+title: "COPUS"
 author: "Stephan Koenig"
 ---
 
@@ -8,14 +8,25 @@ author: "Stephan Koenig"
 ```{r}
 #| label: setup
 
-source("R/functions.R")
-observation_1 <- get_data(
-  "data/raw/2023-11-02_COPUS_CPSC-121_Karina-Mochetti.xlsx",
-  "data/code.csv"
-)
+library(conflicted)
+library(dplyr)
+library(fs)
+library(purrr)
 
-observation_2 <- get_data(
-  "data/raw/2023-11-07_COPUS_CPSC-121_Karina-Mochetti.xlsx",
-  "data/code.csv"
-)
+source("R/functions.R")
+
+copus <- dir_ls("data/raw", glob = "*.xlsx") |>
+  set_names(path_file) |> 
+  map(\(path) get_copus(path, code_path = "data/codes.csv")) |>
+  list_rbind(names_to = "file") |> 
+  tidyr::separate_wider_delim(
+    file,
+    delim = "_",
+    names = c("date", NA, "course", "instructor")
+  ) |>
+  mutate(
+    date = lubridate::ymd(date),
+    across(course:instructor, \(x) stringr::str_replace_all(x, "-", " ")),
+    instructor = stringr::str_remove(instructor, ".xlsx")
+  )
 ```
