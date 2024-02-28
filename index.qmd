@@ -4,9 +4,15 @@ author: "Stephan Koenig"
 format:
   html:
     embed-resources: true
+
+bibliography: references.bib
+csl: ieee.csl
 ---
 
 ## Classroom Observation Protocol for Undergraduate STEM (COPUS)
+
+Classroom Observation Protocol for Undergraduate STEM (COPUS) captures the activities of instructors and students during a class [@smith2013].
+The protocol strictly quantifies the time spent on these activities and not the quality of instruction.
 
 ```{r}
 #| label: setup
