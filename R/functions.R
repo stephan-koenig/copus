@@ -10,9 +10,9 @@ get_labels <- function(codes, code_type) {
     tibble::deframe()
 }
 
-get_data <- function(copus_path, codes_path) {
+get_copus <- function(copus_path, code_path) {
   
-  codes <- readr::read_csv(code_path)
+  codes <- readr::read_csv(code_path, show_col_types = FALSE)
   
   students <- readxl::read_xlsx(copus_path, range = "A5:N45") |> 
     rename(get_labels(codes, "students"))
@@ -27,5 +27,3 @@ get_data <- function(copus_path, codes_path) {
       across(!min, as.logical)
     )
 }
-
-
