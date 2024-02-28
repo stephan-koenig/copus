@@ -3,10 +3,19 @@ title: "COPUS"
 author: "Stephan Koenig"
 format:
   html:
+    highlight-style: ayu
+    theme:
+      light: flatly
+      dark: darkly
     embed-resources: true
+    citations-hover: true
 
 bibliography: references.bib
 csl: ieee.csl
+
+editor_options:
+  markdown:
+    wrap: sentence
 ---
 
 ## Classroom Observation Protocol for Undergraduate STEM (COPUS)
