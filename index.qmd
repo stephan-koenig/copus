@@ -1,32 +1,22 @@
 ---
 title: "COPUS"
 author: "Stephan Koenig"
+format:
+  html:
+    embed-resources: true
 ---
 
 ## Classroom Observation Protocol for Undergraduate STEM (COPUS)
 
 ```{r}
 #| label: setup
+#| echo: false
+#| message: false
 
 library(conflicted)
-library(dplyr)
-library(fs)
-library(purrr)
+library(here)
 
-source("R/functions.R")
+source(here("R", "functions.R"))
 
-copus <- dir_ls("data/raw", glob = "*.xlsx") |>
-  set_names(path_file) |> 
-  map(\(path) get_copus(path, code_path = "data/codes.csv")) |>
-  list_rbind(names_to = "file") |> 
-  tidyr::separate_wider_delim(
-    file,
-    delim = "_",
-    names = c("date", NA, "course", "instructor")
-  ) |>
-  mutate(
-    date = lubridate::ymd(date),
-    across(course:instructor, \(x) stringr::str_replace_all(x, "-", " ")),
-    instructor = stringr::str_remove(instructor, ".xlsx")
-  )
+copus <- process_copus(here("data", "raw"), here("data", "codes.csv"))
 ```
