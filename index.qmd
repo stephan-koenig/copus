@@ -35,3 +35,5 @@ source(here("R", "functions.R"))
 
 copus <- process_copus(here("data", "raw"), here("data", "codes.csv"))
 ```
+
+Codes were further collapsed [@smith2014].
