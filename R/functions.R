@@ -2,6 +2,7 @@ library(conflicted)
 library(dplyr)
 conflicts_prefer(dplyr::filter)
 library(fs)
+library(ggplot2)
 library(purrr)
 library(stringr)
 library(tidyr)
@@ -93,4 +94,43 @@ process_copus <- function(copus_dir, codes_path) {
       instructor = str_remove(instructor, ".xlsx")
     ) |>
     add_collapsed_codes_to_copus(codes_df)
+}
+
+plot_copus_timelines <- function(copus_df, codes_path) {
+  collapsed_codes_df <- readr::read_csv(codes_path, show_col_types = FALSE) |> 
+    get_collapsed_codes() |> 
+    mutate(
+      collapsed_code = collapsed_code |>
+        str_remove("(students|instructors)_") |>
+        str_replace_all("_", " ") |> 
+        str_to_sentence()
+    ) |> 
+    rename(code = label)
+
+  copus_df |>
+    select(date:instructors_other) |>
+    pivot_longer(
+      students_listening:instructors_other,
+      names_to = "code",
+      values_to = "present"
+    ) |>
+    inner_join(collapsed_codes_df, by = join_by(code)) |> 
+    separate_wider_regex(
+      code,
+      patterns = c(subject = "^[:alpha:]+", "_", code = ".+")
+    ) |>
+    filter(present) |> 
+    mutate(
+      code = code |> str_replace_all("_", " ") |> str_to_sentence(),
+      min_start = min - 2
+    ) |> 
+    ggplot(
+      aes(
+        x = min_start, xend = min,
+        y = code,
+        color = subject
+      )
+    ) +
+    geom_segment(linetype = 1, linewidth = 4) +
+    facet_grid(rows = vars(subject), cols = vars(date), scales = "free_y")
 }
