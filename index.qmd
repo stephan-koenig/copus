@@ -32,8 +32,18 @@ library(conflicted)
 library(here)
 
 source(here("R", "functions.R"))
+copus_dir <- here("data", "raw")
+codes_path <- here("data", "codes.csv")
 
-copus <- process_copus(here("data", "raw"), here("data", "codes.csv"))
+copus <- process_copus(copus_dir, codes_path)
 ```
 
 Codes were further collapsed [@smith2014].
+
+```{r}
+#| label: codes-plot
+#| echo: false
+#| message: false
+
+plot_copus_timelines(copus,  codes_path)
+```
