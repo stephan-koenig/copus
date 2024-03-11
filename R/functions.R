@@ -96,6 +96,16 @@ process_copus <- function(copus_dir, codes_path) {
     add_collapsed_codes_to_copus(codes_df)
 }
 
+merge_segments <- function(df) {
+  # If two segments are contiguous, the end time of the first is the start
+  # time of the next and the number is shared among them and can be removed
+  end_time_with_shared   <- df |> pull(min)
+  start_time_with_shared <- end_time_with_shared - 2
+  start_time <- setdiff(start_time_with_shared, end_time_with_shared)
+  end_time   <- setdiff(end_time_with_shared, start_time_with_shared)
+  tibble(start_time, end_time)
+}
+
 plot_copus_timelines <- function(copus_df, codes_path) {
   collapsed_codes_df <- readr::read_csv(codes_path, show_col_types = FALSE) |> 
     get_collapsed_codes() |> 
@@ -114,19 +124,21 @@ plot_copus_timelines <- function(copus_df, codes_path) {
       names_to = "code",
       values_to = "present"
     ) |>
-    inner_join(collapsed_codes_df, by = join_by(code)) |> 
+    inner_join(collapsed_codes_df, by = join_by(code)) |>
     separate_wider_regex(
       code,
       patterns = c(subject = "^[:alpha:]+", "_", code = ".+")
     ) |>
-    filter(present) |> 
+    filter(present) |>
+    nest(segments = min) |>
     mutate(
       code = code |> str_replace_all("_", " ") |> str_to_sentence(),
-      min_start = min - 2
+      segments = map(segments, merge_segments)
     ) |> 
+    unnest(segments) |>
     ggplot(
       aes(
-        x = min_start, xend = min,
+        x = start_time, xend = end_time,
         y = code,
         color = subject
       )
