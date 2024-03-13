@@ -21,7 +21,7 @@ editor_options:
 ## Classroom Observation Protocol for Undergraduate STEM (COPUS)
 
 Classroom Observation Protocol for Undergraduate STEM (COPUS) captures the activities of instructors and students during a class [@smith2013].
-The protocol strictly quantifies the time spent on these activities and not the quality of instruction.
+The protocol strictly quantifies the time spent on these activities and not the quality of instruction. Activities can also be grouped/collapsed into more general codes [@smith2014]. See @tbl-codes for a description of activites and their corresponding group.
 
 ```{r}
 #| label: setup
@@ -44,7 +44,7 @@ copus <- process_copus(copus_dir, codes_path)
 #| label: fig-codes-plots
 #| echo: false
 #| message: false
-#| fig-cap: "Original COPUS codes"
+#| fig-cap: "COPUS activities"
 #| fig-subcap:
 #|   - "Profile"
 #|   - "Timeline"
@@ -66,4 +66,15 @@ plot_codes_timelines(copus)
 
 plot_collapsed_codes_bars(copus)
 plot_collapsed_codes_timelines(copus)
+```
+
+### COPUS code description
+
+```{r}
+#| label: tbl-codes
+#| echo: false
+#| message: false
+#| tbl-cap: "COPUS activity descriptions"
+
+get_code_descritpion_table(codes_path)
 ```
