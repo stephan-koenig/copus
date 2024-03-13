@@ -3,6 +3,7 @@ library(dplyr)
 conflicts_prefer(dplyr::filter)
 library(fs)
 library(ggplot2)
+library(gt)
 library(purrr)
 library(stringr)
 library(tidyr)
@@ -185,4 +186,25 @@ plot_collapsed_codes_bars <- function(copus_df) {
       students_collapsed_other:instructors_presenting
     ) |>
     plot_copus_bars()
+}
+
+get_code_descritpion_table <- function(codes_path) {
+  readr::read_csv(codes_path, show_col_types = FALSE) |>
+    arrange(subject, collapsed_code, label) |>
+    select(subject, collapsed_code, label, description) |>
+    mutate(
+      across(
+        subject:label,
+        ~ .x |>
+          str_remove("collapsed_") |>
+          str_replace_all("_", " ") |>
+          str_to_sentence()
+      )
+    ) |>
+    gt(groupname_col = "subject") |>
+    cols_label(
+      label          = "Activity",
+      collapsed_code = "Collapsed code",
+      description    = "Description"
+    )
 }
