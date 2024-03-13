@@ -96,46 +96,45 @@ process_copus <- function(copus_dir, codes_path) {
     add_collapsed_codes_to_copus(codes_df)
 }
 
-merge_segments <- function(df) {
+merge_segments <- function(end_times_df) {
   # If two segments are contiguous, the end time of the first is the start
   # time of the next and the number is shared among them and can be removed
-  end_time_with_shared   <- df |> pull(min)
+  end_time_with_shared   <- end_times_df |> pull(min)
   start_time_with_shared <- end_time_with_shared - 2
   start_time <- setdiff(start_time_with_shared, end_time_with_shared)
   end_time   <- setdiff(end_time_with_shared, start_time_with_shared)
   tibble(start_time, end_time)
 }
 
-plot_copus_timelines <- function(copus_df, codes_path) {
-  collapsed_codes_df <- readr::read_csv(codes_path, show_col_types = FALSE) |> 
-    get_collapsed_codes() |> 
-    mutate(
-      collapsed_code = collapsed_code |>
-        str_remove("(students|instructors)_") |>
-        str_replace_all("_", " ") |> 
-        str_to_sentence()
-    ) |> 
-    rename(code = label)
-
+prepare_copus_for_plotting <- function(copus_df, ...) {
+  # Use ... for codes to use, either original codes or collapsed ones
   copus_df |>
-    select(date:instructors_other) |>
+    select(date:min, ...) |>
     pivot_longer(
-      students_listening:instructors_other,
+      ...,
       names_to = "code",
       values_to = "present"
     ) |>
-    inner_join(collapsed_codes_df, by = join_by(code)) |>
     separate_wider_regex(
       code,
       patterns = c(subject = "^[:alpha:]+", "_", code = ".+")
     ) |>
+    mutate(
+      code = code |>
+        # Included for collapsed codes
+        str_remove("collapsed_") |>
+        str_replace_all("_", " ") |>
+        str_to_sentence())
+}
+
+plot_copus_timelines <- function(copus_long_df) {
+  copus_long_df |>
     filter(present) |>
     nest(segments = min) |>
-    mutate(
-      code = code |> str_replace_all("_", " ") |> str_to_sentence(),
-      segments = map(segments, merge_segments)
-    ) |> 
+    mutate(segments = map(segments, merge_segments)) |>
     unnest(segments) |>
+    arrange(start_time) |>
+    mutate(code = factor(code, levels = unique(code))) |>
     ggplot(
       aes(
         x = start_time, xend = end_time,
@@ -144,5 +143,46 @@ plot_copus_timelines <- function(copus_df, codes_path) {
       )
     ) +
     geom_segment(linetype = 1, linewidth = 4) +
+    labs(x = "Time [min]", y = NULL) +
+    theme(legend.position = "none") +
     facet_grid(rows = vars(subject), cols = vars(date), scales = "free_y")
+}
+
+plot_codes_timelines <- function(copus_df) {
+  copus_df |>
+    prepare_copus_for_plotting(students_listening:instructors_other) |>
+    plot_copus_timelines()
+}
+
+plot_collapsed_codes_timelines <- function(copus_df) {
+  copus_df |>
+    prepare_copus_for_plotting(
+      students_collapsed_other:instructors_presenting
+    ) |>
+    plot_copus_timelines()
+}
+
+plot_copus_bars <- function(copus_long_df) {
+  copus_long_df |>
+    summarize(proportion = mean(present), .by = c(date, subject, code)) |>
+    ggplot(aes(x = proportion, y = code, fill = subject)) +
+    geom_col() +
+    scale_x_continuous(name = "Percent", labels = scales::label_percent()) +
+    ylab(label = NULL) +
+    theme(legend.position = "none") +
+    facet_grid(rows = vars(subject), cols = vars(date), scales = "free_y")
+}
+
+plot_codes_bars <- function(copus_df) {
+  copus_df |>
+    prepare_copus_for_plotting(students_listening:instructors_other) |>
+    plot_copus_bars()
+}
+
+plot_collapsed_codes_bars <- function(copus_df) {
+  copus_df |>
+    prepare_copus_for_plotting(
+      students_collapsed_other:instructors_presenting
+    ) |>
+    plot_copus_bars()
 }

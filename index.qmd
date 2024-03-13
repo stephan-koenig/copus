@@ -38,12 +38,32 @@ codes_path <- here("data", "codes.csv")
 copus <- process_copus(copus_dir, codes_path)
 ```
 
-Codes were further collapsed [@smith2014].
+### Data
 
 ```{r}
-#| label: codes-plot
+#| label: fig-codes-plots
 #| echo: false
 #| message: false
+#| fig-cap: "Original COPUS codes"
+#| fig-subcap:
+#|   - "Profile"
+#|   - "Timeline"
+#| layout-ncol: 2
 
-plot_copus_timelines(copus,  codes_path)
+plot_codes_bars(copus)
+plot_codes_timelines(copus)
+```
+
+```{r}
+#| label: fig-collapsed-codes-plots
+#| echo: false
+#| message: false
+#| fig-cap: "Collapsed COPUS codes [@smith2014]"
+#| fig-subcap:
+#|   - "Profile"
+#|   - "Timeline"
+#| layout-ncol: 2
+
+plot_collapsed_codes_bars(copus)
+plot_collapsed_codes_timelines(copus)
 ```
