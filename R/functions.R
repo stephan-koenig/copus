@@ -17,17 +17,30 @@ get_labels <- function(codes_df, code_subject) {
 }
 
 load_copus <- function(copus_path, codes_df) {
-  students <- readxl::read_xlsx(copus_path, range = "A5:N45") |>
+  students <-
+    readxl::read_xlsx(
+      copus_path,
+      range = cellranger::cell_limits(c(5, 2), c(NA, 14))
+    ) |>
+    # Expected number of rows for either 50 or 80 min based on 
+    # `COPUS-templates_UseToRecordElectronically.xlsx`
+    filter(row_number() <= ifelse(n() == 46, 40, 25)) |>
     rename(get_labels(codes_df, "students"))
   
-  instructors <- readxl::read_xlsx(copus_path, range = "O5:Z45") |>
+  instructors <-
+    readxl::read_xlsx(
+      copus_path,
+      range = cellranger::cell_limits(c(5, 15), c(NA, 26))
+    ) |>
+    filter(row_number() <= ifelse(n() == 46, 40, 25)) |>
     rename(get_labels(codes_df, "instructors"))
   
   students |>
     bind_cols(instructors) |>
     mutate(
-      across(everything(), ~ tidyr::replace_na(.x, 0)),
-      across(!min, as.logical)
+      across(everything(), \(x) !is.na(x)),
+      min = seq(2, 2 * n(), by = 2),
+      .before = 1
     )
 }
 
