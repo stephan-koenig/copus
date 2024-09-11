@@ -9,6 +9,7 @@ format:
       dark: darkly
     embed-resources: true
     citations-hover: true
+  typst: default
 
 bibliography: references.bib
 csl: ieee.csl
@@ -70,6 +71,8 @@ plot_collapsed_codes_timelines(copus)
 
 ### COPUS code description
 
+`#show figure: set block(breakable: true)`{=typst}
+
 ```{r}
 #| label: tbl-codes
 #| echo: false
@@ -78,3 +81,5 @@ plot_collapsed_codes_timelines(copus)
 
 get_code_descritpion_table(codes_path)
 ```
+
+`#set block(breakable: false)`{=typst}
