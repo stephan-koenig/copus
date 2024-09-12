@@ -62,14 +62,15 @@ add_collapsed_codes_to_copus <- function(copus_df, codes_df) {
       names_to = "label",
       values_to = "present"
     ) |>
-    filter(present) |>
     inner_join(
       collapsed_codes_df,
       by = join_by(label),
       relationship = "many-to-many"
     ) |>
-    select(!label) |>
-    distinct() |>
+    summarize(
+      present = any(present),
+      .by = c(date, course, instructor, min, collapsed_code)
+    ) |>
     arrange(collapsed_code) |>
     pivot_wider(
       names_from = collapsed_code,
