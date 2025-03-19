@@ -22,11 +22,11 @@ load_copus <- function(copus_path, codes_df) {
       copus_path,
       range = cellranger::cell_limits(c(5, 2), c(NA, 14))
     ) |>
-    # Expected number of rows for either 50 or 80 min based on 
+    # Expected number of rows for either 50 or 80 min based on
     # `COPUS-templates_UseToRecordElectronically.xlsx`
     filter(row_number() <= ifelse(n() == 46, 40, 25)) |>
     rename(get_labels(codes_df, "students"))
-  
+
   instructors <-
     readxl::read_xlsx(
       copus_path,
@@ -34,7 +34,7 @@ load_copus <- function(copus_path, codes_df) {
     ) |>
     filter(row_number() <= ifelse(n() == 46, 40, 25)) |>
     rename(get_labels(codes_df, "instructors"))
-  
+
   students |>
     bind_cols(instructors) |>
     mutate(
@@ -55,7 +55,7 @@ get_collapsed_codes <- function(codes_df) {
 
 add_collapsed_codes_to_copus <- function(copus_df, codes_df) {
   collapsed_codes_df <- get_collapsed_codes(codes_df)
-  
+
   collapsed_copus <- copus_df |>
     pivot_longer(
       students_listening:instructors_other,
@@ -82,7 +82,7 @@ add_collapsed_codes_to_copus <- function(copus_df, codes_df) {
       starts_with("instructors"),
       .after = last_col()
     )
-  
+
   copus_df |>
     inner_join(
       collapsed_copus,
@@ -92,7 +92,7 @@ add_collapsed_codes_to_copus <- function(copus_df, codes_df) {
 
 process_copus <- function(copus_dir, codes_path) {
   codes_df <- readr::read_csv(codes_path, show_col_types = FALSE)
-  
+
   copus_dir |>
     dir_ls(glob = "*.xlsx") |>
     set_names(path_file) |>
@@ -114,10 +114,10 @@ process_copus <- function(copus_dir, codes_path) {
 merge_segments <- function(end_times_df) {
   # If two segments are contiguous, the end time of the first is the start
   # time of the next and the number is shared among them and can be removed
-  end_time_with_shared   <- end_times_df |> pull(min)
+  end_time_with_shared <- end_times_df |> pull(min)
   start_time_with_shared <- end_time_with_shared - 2
   start_time <- setdiff(start_time_with_shared, end_time_with_shared)
-  end_time   <- setdiff(end_time_with_shared, start_time_with_shared)
+  end_time <- setdiff(end_time_with_shared, start_time_with_shared)
   tibble(start_time, end_time)
 }
 
@@ -139,7 +139,8 @@ prepare_copus_for_plotting <- function(copus_df, ...) {
         # Included for collapsed codes
         str_remove("collapsed_") |>
         str_replace_all("_", " ") |>
-        str_to_sentence())
+        str_to_sentence()
+    )
 }
 
 plot_copus_timelines <- function(copus_long_df) {
@@ -180,6 +181,7 @@ plot_collapsed_codes_timelines <- function(copus_df) {
 plot_copus_bars <- function(copus_long_df) {
   copus_long_df |>
     summarize(proportion = mean(present), .by = c(date, subject, code)) |>
+    filter(proportion != 0) |>
     ggplot(aes(x = proportion, y = code, fill = subject)) +
     geom_col() +
     scale_x_continuous(name = "Percent", labels = scales::label_percent()) +
